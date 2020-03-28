@@ -1,5 +1,5 @@
 import React from 'react';
-import { ResponsiveContainer, AreaChart, Area, YAxis, XAxis, Tooltip, CartesianGrid, Legend } from 'recharts';
+import { ResponsiveContainer, LineChart, Line, BarChart, Bar, YAxis, XAxis, Tooltip, CartesianGrid, Legend } from 'recharts';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
 
@@ -25,9 +25,6 @@ const CustomTooltip = (props) => {
 
         payload.map(p => {
             p = p.payload;
-            if ("testsThatDay" in p) {
-                tested = p.testsThatDay;
-            }
             if ("positiveThatDay" in p) {
                 positive = p.positiveThatDay;
             }
@@ -39,9 +36,6 @@ const CustomTooltip = (props) => {
             }
             if ("negative" in p) {
                 totalNegative = p.negative;
-            }
-            if ("pending" in p) {
-                totalPending = p.pending;
             }
             if ("total" in p) {
                 totalTested = p.total;
@@ -55,9 +49,6 @@ const CustomTooltip = (props) => {
                     {label}
                 </Typography>
                 <Typography variant="body2" noWrap>
-                    {`Daily Tested: ${tested}`}
-                </Typography>
-                <Typography variant="body2" noWrap>
                     {`Daily Positve : ${positive}`}
                 </Typography>
                 <Typography variant="body2" noWrap>
@@ -68,9 +59,6 @@ const CustomTooltip = (props) => {
                 </Typography>
                 <Typography variant="body2" noWrap>
                     {`Cumulative Negative Rate : ${(totalNegative / totalTested * 100).toFixed(1)} %`}
-                </Typography>
-                <Typography variant="body2" noWrap>
-                    {`Pending: ${totalPending ? totalPending : 0}`}
                 </Typography>
             </div>
         );
@@ -110,22 +98,34 @@ const GraphTestingWidget = (props) => {
             Negative Rate: ${(total_negatives / total_tests * 100).toFixed(1)}% 
             `}
         </Typography>
-        <ResponsiveContainer height={300} >
-            <AreaChart
+        <ResponsiveContainer height={300}>
+            <BarChart
                 data={data}
+                syncId="testData"
                 margin={{ top: 5, right: 30, left: 5, bottom: 5 }}
             >
                 <YAxis />
                 <XAxis dataKey="name" />
                 <CartesianGrid stroke="#d5d5d5" strokeDasharray="5 5" />
-                {/* <Line type="monotone" name="Total Tested" dataKey="total" stroke="#387908" yAxisId={0} strokeWidth={3} />
-            <Line type="monotone" name="Tested Positive" dataKey="positive" stroke="#ff7300" yAxisId={0} strokeWidth={3} /> */}
-                <Area stackId="1" type="monotone" name="Positive" dataKey="positiveThatDay" stroke="#ff7300" fill="#ff7300" yAxisId={0} strokeWidth={3} />
-                <Area stackId="1" type="monotone" name="Negative" dataKey="negativeThatDay" stroke="#00aeef" fill="#00aeef" yAxisId={0} strokeWidth={3} />
-                {/* <Area stackId="1" type="monotone" name="Pending" dataKey="pendingThatDay" stroke="#387908" fill="#387908" yAxisId={0} strokeWidth={3} /> */}
+                <Bar stackId="1" type="monotone" name="Positive" dataKey="positiveThatDay" stroke="#ff7300" fill="#ff7300" yAxisId={0} strokeWidth={3} />
+                <Bar stackId="1" type="monotone" name="Negative" dataKey="negativeThatDay" stroke="#00aeef" fill="#00aeef" yAxisId={0} strokeWidth={3} />
                 <Legend verticalAlign="top" />
                 <Tooltip content={<CustomTooltip />} />
-            </AreaChart>
+            </BarChart>
+        </ResponsiveContainer>
+        <ResponsiveContainer height={300} >
+            <LineChart
+                data={data}
+                syncId="testData"
+                margin={{ top: 5, right: 30, left: 5, bottom: 5 }}
+            >
+                <YAxis />
+                <XAxis dataKey="name" />
+                <Legend verticalAlign="top" />
+                <Tooltip />
+                <CartesianGrid stroke="#d5d5d5" strokeDasharray="5 5" />
+                <Line type="monotone" name="Pending" dataKey="pending" stroke="#387908" yAxisId={0} strokeWidth={3} />
+            </LineChart>
         </ResponsiveContainer>
         <Typography variant="body2" noWrap>
             Data source: https://covidtracking.com/api/
